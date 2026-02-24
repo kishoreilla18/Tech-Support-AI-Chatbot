@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+
+<style>
+
+body{
+margin:0;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#020617,#0f172a,#020617);
+font-family:system-ui;
+}
+
+/* CARD */
+
+.card{
+width:360px;
+padding:40px;
+border-radius:18px;
+background:rgba(30,41,59,.7);
+backdrop-filter:blur(20px);
+box-shadow:0 0 60px rgba(37,99,235,.25);
+animation:fade .8s ease;
+}
+
+@keyframes fade{
+from{opacity:0; transform:translateY(20px)}
+to{opacity:1; transform:translateY(0)}
+}
+
+h2{
+color:white;
+margin-bottom:30px;
+text-align:center;
+}
+
+/* INPUT GROUP */
+
+.group{
+position:relative;
+margin-bottom:28px;
+}
+
+.group input{
+width:100%;
+padding:16px 12px;
+border:none;
+border-radius:10px;
+background:#0f172a;
+color:white;
+font-size:15px;
+outline:none;
+transition:.25s;
+}
+
+.group input:focus{
+box-shadow:0 0 0 2px #2563eb;
+}
+
+.group label{
+position:absolute;
+left:12px;
+top:16px;
+color:#94a3b8;
+font-size:14px;
+pointer-events:none;
+transition:.25s;
+}
+
+.group input:focus + label,
+.group input:not(:placeholder-shown)+label{
+top:-10px;
+font-size:12px;
+background:#1e293b;
+padding:2px 6px;
+border-radius:6px;
+}
+
+/* PASSWORD TOGGLE */
+
+.toggle{
+position:absolute;
+right:12px;
+top:50%;
+transform:translateY(-50%);
+color:#94a3b8;
+cursor:pointer;
+font-size:13px;
+}
+
+/* BUTTON */
+
+button{
+width:100%;
+padding:16px;
+border:none;
+border-radius:12px;
+background:#2563eb;
+color:white;
+font-size:16px;
+cursor:pointer;
+transition:.25s;
+}
+
+button:hover{
+background:#1d4ed8;
+transform:translateY(-1px);
+box-shadow:0 10px 30px rgba(37,99,235,.4);
+}
+
+/* LINK */
+
+.link{
+margin-top:18px;
+text-align:center;
+color:#cbd5e1;
+}
+
+.link a{
+color:#60a5fa;
+text-decoration:none;
+}
+
+.link a:hover{ text-decoration:underline }
+
+</style>
+</head>
+
+<body>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <script>
+      {% for category, message in messages %}
+        alert("{{ message }}");
+      {% endfor %}
+    </script>
+  {% endif %}
+{% endwith %}
+
+<form method="post" class="card">
+
+<h2>Login</h2>
+
+<div class="group">
+<input name="email" placeholder=" " required>
+<label>Email</label>
+</div>
+
+<div class="group">
+<input type="password" id="pass" name="password" placeholder=" " required>
+<label>Password</label>
+<span class="toggle" onclick="toggle()">Show</span>
+</div>
+
+<button>Login</button>
+
+<div class="link">
+Don't have an account? <a href="/signup">Create account</a>
+</div>
+
+</form>
+
+
+<script>
+
+function toggle(){
+
+const p=document.getElementById("pass");
+
+if(p.type==="password"){
+p.type="text";
+event.target.innerText="Hide";
+}else{
+p.type="password";
+event.target.innerText="Show";
+}
+
+}
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <script>
+      {% for category, message in messages %}
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: '{{ message }}',
+          confirmButtonColor: '#3085d6'
+        });
+      {% endfor %}
+    </script>
+  {% endif %}
+{% endwith %}
+
+</body>
+</html>

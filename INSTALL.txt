@@ -1,0 +1,17 @@
+1. unzip project
+2. open terminal in folder
+3. create virtual env:
+
+python -m venv venv
+
+4. activate:
+
+venv\Scripts\activate
+
+5. install dependencies:
+
+pip install -r requirements.txt
+
+6. run project:
+
+python app.py

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AI Tech Support</title>
+
+<style>
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:system-ui;
+background:#0b1020;
+height:100vh;
+display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:260px;
+background:#020617;
+color:white;
+display:flex;
+flex-direction:column;
+border-right:1px solid #1e293b;
+}
+
+.newchat{
+margin:14px;
+padding:14px;
+border-radius:10px;
+background:#2563eb;
+cursor:pointer;
+text-align:center;
+}
+
+.newchat:hover{background:#1d4ed8}
+
+.history{
+flex:1;
+overflow:auto;
+padding:10px;
+}
+
+.history div{
+padding:12px;
+border-radius:8px;
+margin-bottom:6px;
+background:#0f172a;
+cursor:pointer;
+font-size:14px;
+}
+
+.history div:hover{
+background:#1e293b;
+}
+
+/* MAIN */
+
+.main{
+flex:1;
+display:flex;
+flex-direction:column;
+}
+
+/* HEADER */
+
+.header{
+padding:18px;
+background:#020617;
+color:white;
+border-bottom:1px solid #1e293b;
+}
+
+/* CHAT AREA */
+
+#chat{
+flex:1;
+overflow:auto;
+padding:30px;
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.msg{
+max-width:700px;
+padding:14px 18px;
+border-radius:18px;
+line-height:1.4;
+}
+
+.user{
+background:#2563eb;
+color:white;
+align-self:flex-end;
+border-bottom-right-radius:6px;
+}
+
+.bot{
+background:#1e293b;
+color:#e2e8f0;
+align-self:flex-start;
+border-bottom-left-radius:6px;
+}
+
+/* INPUT */
+
+.inputbox{
+display:flex;
+padding:18px;
+background:#020617;
+border-top:1px solid #1e293b;
+}
+
+input{
+flex:1;
+padding:16px;
+border-radius:12px;
+border:none;
+outline:none;
+font-size:16px;
+background:#1e293b;
+color:white;
+}
+
+button{
+margin-left:12px;
+padding:0 28px;
+border:none;
+border-radius:12px;
+background:#2563eb;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{background:#1d4ed8}
+
+.header{
+padding:18px;
+background:#020617;
+color:white;
+border-bottom:1px solid #1e293b;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logout{
+background:#ef4444;
+border:none;
+color:white;
+padding:8px 16px;
+border-radius:8px;
+cursor:pointer;
+font-size:14px;
+}
+
+.logout:hover{
+background:#dc2626;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+<div class="newchat" onclick="newChat()">+ New Chat</div>
+
+<div class="history" id="history"></div>
+
+</div>
+
+
+<!-- MAIN -->
+<div class="main">
+
+<div class="header">
+<span>Intelligent AI Assistant for Tech Support & Field service</span>
+<a href="{{url_for('logout')}}"><button class="logout" onclick="logout()">Logout</button></a>
+</div>
+
+
+<div id="chat"></div>
+
+<div class="inputbox">
+<input id="msg" placeholder="Describe your laptop issue...">
+<button onclick="send()">Send</button>
+</div>
+
+</div>
+
+
+<script>
+
+let conversations=[];
+let current=[];
+
+const chat=document.getElementById("chat");
+const history=document.getElementById("history");
+
+function renderHistory(){
+
+history.innerHTML="";
+
+conversations.forEach((conv,i)=>{
+const d=document.createElement("div");
+d.textContent=conv[0]?.text?.slice(0,30)||"Chat";
+d.onclick=()=>loadChat(i);
+history.appendChild(d);
+});
+
+}
+
+function loadChat(i){
+
+current=conversations[i];
+chat.innerHTML="";
+
+current.forEach(m=>addMessage(m.text,m.cls,false));
+
+}
+
+function newChat(){
+
+if(current.length) conversations.push(current);
+
+current=[];
+chat.innerHTML="";
+renderHistory();
+
+}
+
+function addMessage(text,cls,save=true){
+
+const div=document.createElement("div");
+div.className="msg "+cls;
+div.textContent=text;
+
+chat.appendChild(div);
+chat.scrollTop=chat.scrollHeight;
+
+if(save) current.push({text,cls});
+
+}
+
+async function send(){
+
+const input=document.getElementById("msg");
+const text=input.value.trim();
+
+if(!text) return;
+
+addMessage(text,"user");
+input.value="";
+
+const loading=document.createElement("div");
+loading.className="msg bot";
+loading.textContent="Typing...";
+chat.appendChild(loading);
+
+try{
+
+const res=await fetch("/ask",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message:text})
+});
+
+const data=await res.json();
+
+loading.remove();
+
+addMessage(data.reply,"bot");
+
+}catch(e){
+
+loading.remove();
+addMessage("Server error","bot");
+
+}
+
+}
+
+document.getElementById("msg").addEventListener("keydown",e=>{
+if(e.key==="Enter") send();
+});
+
+</script>
+
+</body>
+</html>
