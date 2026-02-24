@@ -2,7 +2,7 @@ from google import genai
 import os
 
 # Better practice: Use an environment variable or paste your key here
-client = genai.Client(api_key="AIzaSyAkCkd2b2XvbHJ-fb32qkc6umiXn8LziBs")
+client = genai.Client(api_key="")
 
 def detect_issue(text):
     prompt = f"""
